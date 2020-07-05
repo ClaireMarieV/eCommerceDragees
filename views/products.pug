@@ -1,0 +1,9 @@
+html
+  head
+    title= title
+  body
+    ul
+      each product in products
+        li= product.name
+      else
+        li Il n'y a pas de produits en ce moment
