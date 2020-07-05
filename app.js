@@ -66,6 +66,18 @@ client.connect(function (err) {
         }
       });
     });
+    app.get("/produit/:id", function (req, res) {
+      const collection = db.collection("product");
+      collection
+        .find({ _id: ObjectID(req.params.id) })
+        .toArray(function (err, docs) {
+          if (err) {
+            console.error(err);
+          } else {
+            res.render("product", { product: docs[0], title: "Produit" });
+          }
+        });
+    });
 
     app.get("/historique", function (req, res) {
       res.render("history", {

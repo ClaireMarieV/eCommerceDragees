@@ -4,6 +4,7 @@ html
   body
     ul
       each product in products
-        li= product.name
+        li
+          a(href='/produit/' + product._id)= product.name    
       else
         li Il n'y a pas de produits en ce moment
