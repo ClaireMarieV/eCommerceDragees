@@ -1,7 +1,6 @@
 const argon2 = require("argon2");
-//@TODO gerer authentification
 const jwt = require("jsonwebtoken");
-
+require("dotenv").config();
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
@@ -51,6 +50,48 @@ client.connect(function (err) {
           res.redirect("/");
         });
     });
+
+    app.get("/login", function (req, res) {
+      res.render("login", {
+        title: "Connexion",
+      });
+    });
+
+    app.post("/login", function (req, res) {
+      const email = req.body.email;
+      const password = req.body.password;
+
+      db.collection("user")
+        .find({
+          email: email,
+        })
+        .toArray(function (err, docs) {
+          if (docs.length > 0) {
+            const user = docs[0];
+            argon2
+              .verify(user.password, password)
+              .then((ok) =>
+                ok ? Promise.resolve(user) : Promise.reject("password is wrong")
+              )
+              .then(() => {
+                res.set(
+                  "Set-Cookie",
+                  "jwt=" +
+                    jwt.sign(
+                      {
+                        _id: user._id,
+                        email: user.email,
+                      },
+                      process.env.JWT_SECRET,
+                      { expiresIn: process.env.JWT_EXPIRATION }
+                    )
+                );
+                res.redirect("/");
+              });
+          }
+        });
+    });
+
     app.get("/formulaire", function (req, res) {
       res.render("form", {
         title: "Contactez-moi",
