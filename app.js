@@ -6,6 +6,7 @@ const ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.set("view engine", "pug");
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(cors());
+app.use(cookieParser());
 
 const client = new MongoClient("mongodb://localhost:27017", {
   useUnifiedTopology: true,
@@ -116,6 +118,76 @@ client.connect(function (err) {
             console.error(err);
           } else {
             res.render("product", { product: docs[0], title: "Produit" });
+          }
+        });
+    });
+
+    app.post("/produit/:id", function (req, res) {
+      const collection = db.collection("product");
+      collection
+        .find({ _id: ObjectID(req.params.id) })
+        .toArray(function (err, docs) {
+          if (err) {
+            console.error(err);
+          } else {
+            const { jwt: token } = req.cookies;
+
+            if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+              res.render("product", {
+                product: docs[0],
+                title: "Produit",
+              });
+            } else {
+              const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+              db.collection("order")
+                .find({ user: _id, status: "pending" })
+                .toArray(function (err, orders) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    const order = orders[0];
+                    if (!order) {
+                      db.collection("order").insert(
+                        {
+                          user: _id,
+                          status: "pending",
+                          products: [req.params.id],
+                        },
+                        {},
+                        function (err, orders) {
+                          if (err) {
+                            console.error(err);
+                          } else {
+                            res.render("product", {
+                              product: docs[0],
+                              title: "Produit",
+                            });
+                          }
+                        }
+                      );
+                    } else {
+                      db.collection("order").update(
+                        { _id: ObjectID(order._id) },
+                        {
+                          ...order,
+                          products: order.products.concat(req.params.id),
+                        },
+                        {},
+                        function (err, orders) {
+                          if (err) {
+                            console.error(err);
+                          } else {
+                            res.render("product", {
+                              product: docs[0],
+                              title: "Produit",
+                            });
+                          }
+                        }
+                      );
+                    }
+                  }
+                });
+            }
           }
         });
     });
