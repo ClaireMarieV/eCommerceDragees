@@ -192,6 +192,42 @@ client.connect(function (err) {
         });
     });
 
+    app.get("/panier", function (req, res) {
+      const { jwt: token } = req.cookies;
+
+      if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+        res.render("product", {
+          product: docs[0],
+          title: "Produit",
+        });
+      } else {
+        const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+        db.collection("order")
+          .find({ user: _id, status: "pending" })
+          .toArray(function (err, orders) {
+            if (err) {
+              console.error(err);
+            } else {
+              const order = orders[0];
+              db.collection("product")
+                .find({
+                  $or: order.products.map((id) => ({ _id: ObjectID(id) })),
+                })
+                .toArray(function (err, products) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    res.render("cart", {
+                      products: products,
+                      title: "Panier",
+                    });
+                  }
+                });
+            }
+          });
+      }
+    });
+
     app.get("/historique", function (req, res) {
       res.render("history", {
         title: "De la boutique à l'évenementiel",
