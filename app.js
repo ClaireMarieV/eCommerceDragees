@@ -258,19 +258,23 @@ client.connect(function (err) {
     });
     app.post("/admin/products", function (req, res) {
       const name = req.body.name;
+      const description = req.body.description;
       const price = req.body.price;
       db.collection("product").insert({
         name: name,
+        description: description,
         price: price,
       });
     });
     app.put("/admin/products/:id", function (req, res) {
       const name = req.body.name;
+      const description = req.body.description;
       const price = req.body.price;
       db.collection("product").update(
         { _id: ObjectID(req.params.id) },
         {
           name: name,
+          description: description,
           price: price,
         }
       );
