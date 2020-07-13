@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const Product = () => {
-  const [product, setProduct] = useState({ name: "", price: "" });
+  const [product, setProduct] = useState({
+    name: "",
+    price: "",
+    description: "",
+  });
   const [productLoading, setProductLoading] = useState(false);
   const [productError, setProductError] = useState(null);
   const { productId } = useParams();
@@ -31,23 +35,41 @@ const Product = () => {
 
   return (
     <div>
-      <h2>Produit</h2>
-      {productError}
-      {productLoading && "Chargement"}
-      <input
-        type="text"
-        value={product.name}
-        onChange={(event) =>
-          setProduct({ ...product, name: event.target.value })
-        }
-      />
-      <input
-        type="number"
-        value={product.price}
-        onChange={(event) =>
-          setProduct({ ...product, price: event.target.value })
-        }
-      />
+      <ul>
+        <h2>Produit</h2>
+        {productError}
+        {productLoading && "Chargement"}
+        <li>
+          <span>Nom</span>
+          <input
+            type="text"
+            value={product.name}
+            onChange={(event) =>
+              setProduct({ ...product, name: event.target.value })
+            }
+          />
+        </li>
+        <li>
+          <span>Description</span>
+          <input
+            type="text"
+            value={product.description}
+            onChange={(event) =>
+              setProduct({ ...product, description: event.target.value })
+            }
+          />
+        </li>
+        <li>
+          <span>Prix</span>
+          <input
+            type="number"
+            value={product.price}
+            onChange={(event) =>
+              setProduct({ ...product, price: event.target.value })
+            }
+          />
+        </li>
+      </ul>
       <button onClick={() => saveProduct()}>Sauvegarder</button>
     </div>
   );
