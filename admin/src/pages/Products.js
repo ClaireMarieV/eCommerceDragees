@@ -31,6 +31,9 @@ const Products = () => {
           </li>
         ))}
       </ul>
+      <a href="/products/new">
+        <button>Ajouter un nouveau produit</button>
+      </a>
     </div>
   );
 };
