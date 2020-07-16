@@ -39,11 +39,15 @@ client.connect(function (err) {
     app.post("/register", function (req, res) {
       const email = req.body.email;
       const password = req.body.password;
+      const firstname = req.body.firstname;
+      const lastname = req.body.lastname;
 
       argon2
         .hash(password, { type: argon2.argon2id })
         .then((password) => {
           db.collection("user").insert({
+            firstname: firstname,
+            lastname: lastname,
             email: email,
             password: password,
           });

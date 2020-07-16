@@ -4,6 +4,8 @@ html
     title= title
   body
     form( method="POST" )
-      input( type='email', name="email" )
-      input( type='password', name="password" )
+      input( type='firstname', name='firstname', placeholder='Nom')
+      input( type='lastname', name='lastname', placeholder='Prénom')
+      input( type='email', name="email", placeholder='Email' )
+      input( type='password', name="password", placeholder='Mot de passe' )
       button( type="submit")= "Créer mon compte"
