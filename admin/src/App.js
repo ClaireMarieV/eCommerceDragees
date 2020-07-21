@@ -4,6 +4,7 @@ import "./App.css";
 import Product from "./pages/Product";
 import Products from "./pages/Products";
 import Dashboard from "./pages/Dashboard";
+import Delivery from "./pages/Delivery";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
           <Product />
         </Route>
         <Route exact path="/products/:productId">
+          <Product />
+        </Route>
+        <Route exact path="/delivery">
           <Product />
         </Route>
       </Switch>

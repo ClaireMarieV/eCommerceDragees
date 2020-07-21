@@ -98,11 +98,6 @@ client.connect(function (err) {
         });
     });
 
-    app.get("/formulaire", function (req, res) {
-      res.render("form", {
-        title: "Contactez-moi",
-      });
-    });
     app.get("/produits", function (req, res) {
       const collection = db.collection("product");
       collection.find({}).toArray(function (err, docs) {
@@ -130,7 +125,7 @@ client.connect(function (err) {
       const collection = db.collection("product");
       collection
         .find({ _id: ObjectID(req.params.id) })
-        .toArray(function (err, docs) {
+        .toArray(function (err, products) {
           if (err) {
             console.error(err);
           } else {
@@ -138,10 +133,11 @@ client.connect(function (err) {
 
             if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
               res.render("product", {
-                product: docs[0],
+                product: products[0],
                 title: "Produit",
               });
             } else {
+              //deconstruction de l'objet du jwt
               const { _id } = jwt.decode(token, process.env.JWT_SECRET);
               db.collection("order")
                 .find({ user: _id, status: "pending" })
@@ -163,7 +159,7 @@ client.connect(function (err) {
                             console.error(err);
                           } else {
                             res.render("product", {
-                              product: docs[0],
+                              product: products[0],
                               title: "Produit",
                             });
                           }
@@ -182,7 +178,7 @@ client.connect(function (err) {
                             console.error(err);
                           } else {
                             res.render("product", {
-                              product: docs[0],
+                              product: products[0],
                               title: "Produit",
                             });
                           }
@@ -196,16 +192,17 @@ client.connect(function (err) {
         });
     });
 
+    // recupere info et affiche, pas de maj !
     app.get("/panier", function (req, res) {
       const { jwt: token } = req.cookies;
 
+      //si pas de token ou si jwt pas valide
       if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
-        res.render("product", {
-          product: docs[0],
-          title: "Produit",
-        });
+        res.redirect("/login");
       } else {
+        // si token validé id recupéré
         const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+
         db.collection("order")
           .find({ user: _id, status: "pending" })
           .toArray(function (err, orders) {
@@ -213,6 +210,8 @@ client.connect(function (err) {
               console.error(err);
             } else {
               const order = orders[0];
+              // une fois premier order de la liste recupéré
+              // =>  pour chacun des id de produits de l'order  on créé un filtre mongo avec l"id
               db.collection("product")
                 .find({
                   $or: order.products.map((id) => ({ _id: ObjectID(id) })),
@@ -232,10 +231,50 @@ client.connect(function (err) {
       }
     });
 
-    app.get("/historique", function (req, res) {
-      res.render("history", {
-        title: "De la boutique à l'évenementiel",
+    app.get("/livraison", function (req, res) {
+      res.render("delivery", {
+        title: "Adresse de livraison",
       });
+    });
+    //todo: HERE
+    app.post("/livraison", function (req, res) {
+      const address = req.body.address;
+      const collection = db.collection("order");
+      const user = db.collection("user");
+      const { jwt: token } = req.cookies;
+
+      if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+        res.render("login", {});
+      } else {
+        //récupère order avec statut pending
+        const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+
+        collection
+          .find({ user: _id, status: "pending" })
+          .toArray(function (err, orders) {
+            if (err) {
+              console.error(err);
+            } else {
+              const order = orders[0];
+
+              db.collection("order").update(
+                { _id: ObjectID(order._id) },
+                {
+                  ...order,
+                  address: address,
+                },
+                {},
+                function (err, orders) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    res.redirect("/");
+                  }
+                }
+              );
+            }
+          });
+      }
     });
 
     app.get("/admin/products", function (req, res) {
