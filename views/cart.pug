@@ -5,7 +5,9 @@ html
     ul
       each product in products
         li
-          a(href='/produit/' + product._id)= product.name
+          a(href='/produit/' + product._id )= product.name 
+          span= product.quantity
+          
       else
         li Il n'y a pas de produits en ce moment
 

@@ -195,6 +195,7 @@ client.connect(function (err) {
     // recupere info et affiche, pas de maj !
     app.get("/panier", function (req, res) {
       const { jwt: token } = req.cookies;
+      const qty = db.collection("quantity");
 
       //si pas de token ou si jwt pas valide
       if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
@@ -210,18 +211,34 @@ client.connect(function (err) {
               console.error(err);
             } else {
               const order = orders[0];
-              // une fois premier order de la liste recupéré
+              // premier order de la liste recupéré
               // =>  pour chacun des id de produits de l'order  on créé un filtre mongo avec l"id
               db.collection("product")
                 .find({
+                  //recuperation de l'id du produit
                   $or: order.products.map((id) => ({ _id: ObjectID(id) })),
                 })
                 .toArray(function (err, products) {
                   if (err) {
                     console.error(err);
                   } else {
+                    const productsCount = {};
+
+                    for (let i = 0; i < order.products.length; i++) {
+                      const productId = order.products[i];
+
+                      if (!productsCount[productId]) {
+                        productsCount[productId] = 1;
+                      } else {
+                        productsCount[productId] = productsCount[productId] + 1;
+                      }
+                    }
+
                     res.render("cart", {
-                      products: products,
+                      products: products.map((product) => ({
+                        ...product,
+                        quantity: productsCount[product._id],
+                      })),
                       title: "Panier",
                     });
                   }
