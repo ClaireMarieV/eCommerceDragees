@@ -98,6 +98,51 @@ client.connect(function (err) {
         });
     });
 
+    app.get("/profil", function (req, res) {
+      res.render("profil", {
+        title: "Page de profil",
+      });
+    });
+    app.post("/profil", function (req, res) {
+      const { jwt: token } = req.cookies;
+      const address = req.body.address;
+
+      if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+        res.redirect("/login");
+      } else {
+        // si token validé => id recupéré
+        const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+
+        db.collection("user")
+          .find({ _id: ObjectID(_id) })
+          .toArray(function (err, users) {
+            if (err) {
+              console.error(err);
+            } else {
+              const user = users[0];
+              // premier user de la liste recupéré
+              db.collection("user").update(
+                { _id: ObjectID(user._id) },
+                {
+                  ...user,
+                  address: address,
+                },
+                {},
+                function (err, users) {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    res.render("profil", {
+                      title: "Page de profil",
+                    });
+                  }
+                }
+              );
+            }
+          });
+      }
+    });
+
     app.get("/produits", function (req, res) {
       const collection = db.collection("product");
       collection.find({}).toArray(function (err, docs) {
@@ -253,9 +298,8 @@ client.connect(function (err) {
         title: "Adresse de livraison",
       });
     });
-    //todo: HERE
+
     app.post("/livraison", function (req, res) {
-      const address = req.body.address;
       const collection = db.collection("order");
       const user = db.collection("user");
       const { jwt: token } = req.cookies;
