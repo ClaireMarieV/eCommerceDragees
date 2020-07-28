@@ -75,6 +75,66 @@ module.exports = () =>
                     }
                   });
               }),
+            getOrder: (orderId) =>
+              new Promise((resolve, reject) => {
+                db.collection("order")
+                  .find({ _id: ObjectID(orderId) })
+                  .toArray((error, orders) => {
+                    if (error) {
+                      reject(error);
+                    } else if (orders.length == 0) {
+                      reject("order not found");
+                    } else {
+                      const order = orders[0];
+                      db.collection("product")
+                        .find({
+                          //recuperation de l'id du produit
+                          $or: order.products.map((id) => ({
+                            _id: ObjectID(id),
+                          })),
+                        })
+                        .toArray(function (error, products) {
+                          if (error) {
+                            reject(error);
+                          } else {
+                            const productsCount = {};
+
+                            for (let i = 0; i < order.products.length; i++) {
+                              const productId = order.products[i];
+
+                              if (!productsCount[productId]) {
+                                productsCount[productId] = 1;
+                              } else {
+                                productsCount[productId] =
+                                  productsCount[productId] + 1;
+                              }
+                            }
+                            resolve({
+                              ...order,
+                              products: products.map((product) => ({
+                                ...product,
+                                quantity: productsCount[product._id],
+                              })),
+                            });
+                          }
+                        });
+                    }
+                  });
+              }),
+            getProduct: (productId) =>
+              new Promise((resolve, reject) => {
+                db.collection("product")
+                  .find({ _id: ObjectID(productId) })
+                  .toArray((error, products) => {
+                    if (error) {
+                      reject(error);
+                    } else if (products.length == 0) {
+                      reject("product not found");
+                    } else {
+                      resolve(products[0]);
+                    }
+                  });
+              }),
           },
           db,
         });

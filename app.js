@@ -161,17 +161,14 @@ database()
         }
       });
     });
+
     app.get("/produit/:id", function (req, res) {
-      const collection = db.collection("product");
-      collection
-        .find({ _id: ObjectID(req.params.id) })
-        .toArray(function (err, docs) {
-          if (err) {
-            console.error(err);
-          } else {
-            res.render("product", { product: docs[0], title: "Produit" });
-          }
-        });
+      database
+        .getProduct(req.params.id)
+        .then((product) => {
+          res.render("product", { product: product, title: "Produit" });
+        })
+        .catch((error) => console.error(error));
     });
 
     app.post("/produit/:id", function (req, res) {
@@ -270,9 +267,18 @@ database()
     });
 
     app.get("/livraison", function (req, res) {
-      res.render("delivery", {
-        title: "Adresse de livraison",
-      });
+      const { jwt: token } = req.cookies;
+
+      if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+        res.render("login", {});
+      } else {
+        //récupère order avec statut pending
+        const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+
+        res.render("delivery", {
+          title: "Adresse de livraison",
+        });
+      }
     });
 
     app.post("/livraison", function (req, res) {
