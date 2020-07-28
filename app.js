@@ -1,7 +1,7 @@
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const MongoClient = require("mongodb").MongoClient;
+const database = require("./server/database");
 const ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
 const express = require("express");
@@ -16,17 +16,8 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(cookieParser());
 
-const client = new MongoClient("mongodb://localhost:27017", {
-  useUnifiedTopology: true,
-});
-
-client.connect(function (err) {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log("Connected successfully to server");
-    const db = client.db("dragees");
-
+database()
+  .then(({ database, db }) => {
     app.get("/", function (req, res) {
       res.send("Hello World!");
     });
@@ -134,33 +125,29 @@ client.connect(function (err) {
         // si token validé => id recupéré
         const { _id } = jwt.decode(token, process.env.JWT_SECRET);
 
-        db.collection("user")
-          .find({ _id: ObjectID(_id) })
-          .toArray(function (err, users) {
-            if (err) {
-              console.error(err);
-            } else {
-              const user = users[0];
-              // premier user de la liste recupéré
-              db.collection("user").update(
-                { _id: ObjectID(user._id) },
-                {
-                  ...user,
-                  address: address,
-                },
-                {},
-                function (err, users) {
-                  if (err) {
-                    console.error(err);
-                  } else {
-                    res.render("profil", {
-                      title: "Page de profil",
-                    });
-                  }
+        database
+          .getUser(_id)
+          .then((user) => {
+            // premier user de la liste recupéré
+            db.collection("user").update(
+              { _id: ObjectID(user._id) },
+              {
+                ...user,
+                address: address,
+              },
+              {},
+              function (err, users) {
+                if (err) {
+                  console.error(err);
+                } else {
+                  res.render("profil", {
+                    title: "Page de profil",
+                  });
                 }
-              );
-            }
-          });
+              }
+            );
+          })
+          .catch((error) => console.error(error));
       }
     });
 
@@ -270,47 +257,15 @@ client.connect(function (err) {
         // si token validé id recupéré
         const { _id } = jwt.decode(token, process.env.JWT_SECRET);
 
-        db.collection("order")
-          .find({ user: _id, status: "pending" })
-          .toArray(function (err, orders) {
-            if (err) {
-              console.error(err);
-            } else {
-              const order = orders[0];
-              // premier order de la liste recupéré
-              // =>  pour chacun des id de produits de l'order  on créé un filtre mongo avec l"id
-              db.collection("product")
-                .find({
-                  //recuperation de l'id du produit
-                  $or: order.products.map((id) => ({ _id: ObjectID(id) })),
-                })
-                .toArray(function (err, products) {
-                  if (err) {
-                    console.error(err);
-                  } else {
-                    const productsCount = {};
-
-                    for (let i = 0; i < order.products.length; i++) {
-                      const productId = order.products[i];
-
-                      if (!productsCount[productId]) {
-                        productsCount[productId] = 1;
-                      } else {
-                        productsCount[productId] = productsCount[productId] + 1;
-                      }
-                    }
-
-                    res.render("cart", {
-                      products: products.map((product) => ({
-                        ...product,
-                        quantity: productsCount[product._id],
-                      })),
-                      title: "Panier",
-                    });
-                  }
-                });
-            }
-          });
+        database
+          .getCart(_id)
+          .then((order) => {
+            res.render("cart", {
+              products: order.products,
+              title: "Panier",
+            });
+          })
+          .catch((error) => console.error(error));
       }
     });
 
@@ -453,5 +408,5 @@ client.connect(function (err) {
     });
 
     app.listen(3001, function () {});
-  }
-});
+  })
+  .catch((error) => console.error(error));
