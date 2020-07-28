@@ -4,7 +4,7 @@ html
     title= title
   body
     div(class="profil")
-      h2= "MON COMPTE"
+      h2= "MON EVENTS COMPTE"
         form( method="POST" )
           input( type='firstname', name='firstname', placeholder='Nom')
           input( type='lastname', name='lastname', placeholder='Prénom')
@@ -18,7 +18,12 @@ html
         ul
           each order in orders
             li
-              span= order.id
+              span= order.date
               
           else
-            li Il n'y a pas de produits en ce moment
+            li Aucun achat a été effectué pour le moment
+      div
+        a(href="")
+          h2= "PRENDRE UN RENDEZ-VOUS"
+            h3="CHOISIR UN SERVICE"
+        

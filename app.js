@@ -99,10 +99,31 @@ client.connect(function (err) {
     });
 
     app.get("/profil", function (req, res) {
-      res.render("profil", {
-        title: "Page de profil",
-      });
+      const { jwt: token } = req.cookies;
+
+      if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
+        res.redirect("/login");
+      } else {
+        const { _id } = jwt.decode(token, process.env.JWT_SECRET);
+
+        db.collection("order")
+          .find({
+            user: ObjectID(_id),
+            status: "completed",
+          })
+          .toArray(function (err, orders) {
+            if (err) {
+              console.error(err);
+            } else {
+              res.render("profil", {
+                orders,
+                title: "Page de profil",
+              });
+            }
+          });
+      }
     });
+
     app.post("/profil", function (req, res) {
       const { jwt: token } = req.cookies;
       const address = req.body.address;
