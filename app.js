@@ -45,7 +45,7 @@ database()
           });
         })
         .then((user) => {
-          res.redirect("/");
+          res.redirect("/profil");
         });
     });
 
@@ -84,7 +84,7 @@ database()
                       { expiresIn: process.env.JWT_EXPIRATION }
                     )
                 );
-                res.redirect("/");
+                res.redirect("/profil");
               });
           }
         });

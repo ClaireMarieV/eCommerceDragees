@@ -1,3 +1,8 @@
+/*general css*/
+body {
+  background-color: #fcf9f7;
+}
+
 h2 {
   font-family: freight-neo-pro, sans-serif;
   font-weight: 700;
@@ -13,20 +18,31 @@ span {
 }
 ul li {
   list-style: none;
+  font-size: bold;
 }
 a {
+  color: #25261e;
   text-decoration: none;
 }
+
+/**css header*/
 .header {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .header ul {
   display: flex;
+  justify-content: flex-end;
 }
-.header ul li > ul {
-  visibility: hidden;
+.header ul > li {
+  margin: 0.5rem;
 }
-.header ul li:hover > ul {
-  visibility: visible;
+.header ul > li a:hover {
+  color: #f26b5b;
+}
+
+/*css login*/
+.account {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }

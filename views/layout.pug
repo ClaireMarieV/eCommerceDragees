@@ -7,21 +7,19 @@ html
 
   body
     <div class='header'>
-      h2= 'Dragees'
+      a(href='/')
+        h2= 'DRAGEES'
+        
       ul
-        li
-          a(href='/profil')
-            span= 'COMPTE'
-            ul
-              li
-                a(href='/register')
-                  span='Créer mon compte'
-              li
-                a(href="/login")
-                  span="Me connecter"
         li
           a(href='/produits')
             span= 'NOS PRODUITS'
+        li
+          a(href='/login')
+            span= 'COMPTE'
+        li
+          a(href='/panier')
+            span= 'PANIER'
     </div>
       block content
       block footer
