@@ -1,8 +1,6 @@
+extends layout.pug
 
-html
-  head
-    title= title
-  body
+block content
     form( method="POST" )
       input( type='firstname', name='firstname', placeholder='Nom')
       input( type='lastname', name='lastname', placeholder='Prénom')

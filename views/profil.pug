@@ -1,29 +1,27 @@
+extends layout.pug
 
-html
-  head
-    title= title
-  body
-    div(class="profil")
-      h2= "MON EVENTS COMPTE"
-        form( method="POST" )
-          input( type='firstname', name='firstname', placeholder='Nom')
-          input( type='lastname', name='lastname', placeholder='Prénom')
-          input( type='address', name='address', placeholder='Adresse')
-          input( type='email', name="email", placeholder='Email' )
-          input( type='password', name="password", placeholder='Mot de passe' )
-          button( type="submit")= "Modifier mon compte"
-        
-      div
-        h2= "MES ACHATS"
-        ul
-          each order in orders
-            li
-              span= order.date
-              
-          else
-            li Aucun achat a été effectué pour le moment
-      div
-        a(href="")
-          h2= "PRENDRE UN RENDEZ-VOUS"
-            h3="CHOISIR UN SERVICE"
-        
+block content
+  div(class="profil")
+    h3= "MON EVENTS COMPTE"
+      form( method="POST" )
+        input( type='firstname', name='firstname', placeholder='Nom')
+        input( type='lastname', name='lastname', placeholder='Prénom')
+        input( type='address', name='address', placeholder='Adresse')
+        input( type='email', name="email", placeholder='Email' )
+        input( type='password', name="password", placeholder='Mot de passe' )
+        button( type="submit")= "Modifier mon compte"
+      
+    div
+      h3= "MES ACHATS"
+      ul
+        each order in orders
+          li
+            span= order.date
+            
+        else
+          li Aucun achat a été effectué pour le moment
+    div
+      a(href="")
+        h3= "PRENDRE UN RENDEZ-VOUS"
+          h4="CHOISIR UN SERVICE"
+      

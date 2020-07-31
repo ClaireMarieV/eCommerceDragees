@@ -1,16 +1,15 @@
-html
-  head
-    title= title
-  body
-    ul
-      each product in products
-        li
-          a(href='/produit/' + product._id )= product.name 
-          span= product.quantity
-          
-      else
-        li Il n'y a pas de produits en ce moment
+extends layout.pug
 
-    form( method="POST" )
-      button(type="submit")
-        a(href="/livraison")= "Commander"
+block content
+  ul
+    each product in products
+      li
+        a(href='/produit/' + product._id )= product.name 
+        span= product.quantity
+        
+    else
+      li Il n'y a pas de produits en ce moment
+
+  form( method="POST" )
+    button(type="submit")
+      a(href="/livraison")= "Commander"

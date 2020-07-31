@@ -1,10 +1,9 @@
-html
-  head
-    title= title
-  body
-    form( method="POST" )
-      h2= 'Adresse de livraison'
-      input( type='adress', name="adress", placeholder='Adresse' )
-      input( type='town', name="town", placeholder='Ville' )
-      input( type='CP', name="CP", placeholder='Code Postal' )
-      button( type="submit")= "Accepter"
+extends layout.pug
+
+block content
+  form( method="POST" )
+    h3= 'Adresse de livraison'
+    input( type='adress', name="adress", placeholder='Adresse' )
+    input( type='town', name="town", placeholder='Ville' )
+    input( type='CP', name="CP", placeholder='Code Postal' )
+    button( type="submit")= "Accepter"

@@ -1,8 +1,6 @@
+extends layout.pug
 
-html
-  head
-    title= title
-  body
+block content
     form( method="POST" )
       input( type='email', name="email", placeholder='Email' )
       input( type='password', name="password", placeholder='Mot de passe' )

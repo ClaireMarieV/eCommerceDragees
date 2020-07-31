@@ -1,0 +1,28 @@
+html
+  head
+    title= title
+    link(rel= 'stylesheet' href='/css/layout.css')
+    <link rel="stylesheet" href="https://use.typekit.net/lrb5nmu.css">
+    <link rel="stylesheet" href="https://use.typekit.net/lrb5nmu.css">
+
+  body
+    <div class='header'>
+      h2= 'Dragees'
+      ul
+        li
+          a(href='/profil')
+            span= 'COMPTE'
+            ul
+              li
+                a(href='/register')
+                  span='Créer mon compte'
+              li
+                a(href="/login")
+                  span="Me connecter"
+        li
+          a(href='/produits')
+            span= 'NOS PRODUITS'
+    </div>
+      block content
+      block footer
+  

@@ -15,6 +15,7 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 app.use(cors());
 app.use(cookieParser());
+app.use(express.static("public"));
 
 database()
   .then(({ database, db }) => {

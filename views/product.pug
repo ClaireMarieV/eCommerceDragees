@@ -1,8 +1,7 @@
-html
-  head
-    title= title
-  body
-    h2= product.name
+extends layout.pug
+
+block content
+    h4= product.name
     p= product.description
     span= product.price
     form( method="POST" )
