@@ -31,7 +31,7 @@ module.exports = () =>
               }),
             getCart: (userId) =>
               new Promise((resolve, reject) => {
-                db.collection("orders")
+                db.collection("order")
                   .find({ user: userId, status: "pending" })
                   .toArray((error, orders) => {
                     if (error) {
