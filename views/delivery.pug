@@ -3,7 +3,7 @@ extends layout.pug
 block content
   form( method="POST" )
     h3= 'Adresse de livraison'
-    input( type='adress', name="adress", placeholder='Adresse' )
+    input( type='adress', name="adress", value= address )
     input( type='town', name="town", placeholder='Ville' )
     input( type='CP', name="CP", placeholder='Code Postal' )
     button( type="submit")= "Accepter"

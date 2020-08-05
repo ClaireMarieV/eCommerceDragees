@@ -276,9 +276,16 @@ database()
         //récupère order avec statut pending
         const { _id } = jwt.decode(token, process.env.JWT_SECRET);
 
-        res.render("delivery", {
-          title: "Adresse de livraison",
-        });
+        database
+          .getUser(_id)
+          .then((user) => {
+            // premier user de la liste recupéré
+            res.render("delivery", {
+              address: user.address,
+              title: "Adresse de livraison",
+            });
+          })
+          .catch((error) => console.error(error));
       }
     });
 
