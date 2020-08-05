@@ -4,9 +4,12 @@ block content
   div(class="profil")
     h3= "MON EVENTS COMPTE"
       form( method="POST" )
-        input( type='firstname', name='firstname', placeholder='Nom')
-        input( type='lastname', name='lastname', placeholder='Prénom')
-        input( type='address', name='address', placeholder='Adresse')
+        input( type='firstname', name='firstname', value = firstname)
+        input( type='lastname', name='lastname', value= lastname)
+        input( type='address', name='address', value= address)
+        input( type='town', name='town', value= town)
+        input( type='postal', name='postal', value= postal)
+
         input( type='email', name="email", placeholder='Email' )
         input( type='password', name="password", placeholder='Mot de passe' )
         button( type="submit")= "Modifier mon compte"

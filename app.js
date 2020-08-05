@@ -98,27 +98,38 @@ database()
       } else {
         const { _id } = jwt.decode(token, process.env.JWT_SECRET);
 
-        db.collection("order")
-          .find({
-            user: ObjectID(_id),
-            status: "completed",
-          })
-          .toArray(function (err, orders) {
-            if (err) {
-              console.error(err);
-            } else {
-              res.render("profil", {
-                orders,
-                title: "Page de profil",
-              });
-            }
-          });
+        database.getUser(_id).then((user) => {
+          db.collection("order")
+            .find({
+              user: _id,
+              status: "completed",
+            })
+            .toArray(function (err, orders) {
+              if (err) {
+                console.error(err);
+              } else {
+                res.render("profil", {
+                  firstname: user.firstname,
+                  lastname: user.lastname,
+                  address: user.address,
+                  town: user.town,
+                  postal: user.postal,
+                  orders,
+                  title: "Page de profil",
+                });
+              }
+            });
+        });
       }
     });
 
     app.post("/profil", function (req, res) {
       const { jwt: token } = req.cookies;
       const address = req.body.address;
+      const town = req.body.town;
+      const firstname = req.body.firstname;
+      const lastname = req.body.lastname;
+      const postal = req.body.postal;
 
       if (!token || !jwt.verify(token, process.env.JWT_SECRET)) {
         res.redirect("/login");
@@ -135,15 +146,17 @@ database()
               {
                 ...user,
                 address: address,
+                postal: postal,
+                firstname: firstname,
+                lastname: lastname,
+                town: town,
               },
               {},
               function (err, users) {
                 if (err) {
                   console.error(err);
                 } else {
-                  res.render("profil", {
-                    title: "Page de profil",
-                  });
+                  res.redirect("/profil");
                 }
               }
             );
@@ -281,7 +294,7 @@ database()
           .then((user) => {
             // premier user de la liste recupéré
             res.render("delivery", {
-              address: user.address,
+              adress: user.address,
               title: "Adresse de livraison",
             });
           })
