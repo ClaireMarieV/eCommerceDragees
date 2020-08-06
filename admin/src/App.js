@@ -40,9 +40,6 @@ function App() {
         <Route exact path="/products/:productId">
           <Product />
         </Route>
-        <Route exact path="/delivery">
-          <Product />
-        </Route>
       </Switch>
     </Router>
   );
