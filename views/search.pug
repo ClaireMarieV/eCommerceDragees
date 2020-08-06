@@ -1,0 +1,9 @@
+extends layout.pug
+
+block content
+  ul
+    each product in filteredProducts
+      li
+        span= product.name    
+    else
+      li Il n'y a pas de produits correspondant à votre recherche

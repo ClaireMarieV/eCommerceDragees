@@ -20,10 +20,39 @@ app.use(express.static("public"));
 database()
   .then(({ database, db }) => {
     app.get("/", function (req, res) {
-      res.send("Hello World!");
+      res.render("index", {
+        title: "Page d'accueil",
+      });
+    });
+    app.get("/recherche", function (req, res) {
+      res.render("search", {
+        title: "Votre recherche",
+      });
+    });
+    //recherche par l'utilisateur
+    app.post("/recherche", function (req, res) {
+      const textSearch = req.body.search;
+
+      db.collection("product")
+        .find({})
+        .toArray(function (err, products) {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log(products);
+            const filteredProducts = products.filter((product) =>
+              product.name.includes(textSearch)
+            );
+            res.render("search", {
+              filteredProducts,
+              title: "Votre recherche",
+            });
+          }
+        });
     });
 
-    app.get("/register", function (req, res) {
+    //enregistrement de l'utilisateur
+    app.get("/enregistrement", function (req, res) {
       res.render("register", {
         title: "Création de compte",
       });
@@ -49,7 +78,7 @@ database()
         });
     });
 
-    app.get("/login", function (req, res) {
+    app.get("/connexion", function (req, res) {
       res.render("login", {
         title: "Connexion",
       });
@@ -171,7 +200,7 @@ database()
         if (err) {
           console.error(err);
         } else {
-          res.render("products", { products: docs, title: "Dragées" });
+          res.render("products", { products: docs, title: "Produits" });
         }
       });
     });
