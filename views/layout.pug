@@ -9,7 +9,13 @@ html
     <div class='header'>
       a(href='/')
         h2= 'DRAGEES'
-        
+
+          //todo à faire
+      form( action="/recherche" method="POST" )
+        <div class="search">
+          span= 'RECHERCHE'
+          input( type='search', name='search')   
+        </div> 
       ul
         li
           a(href='/produits')
